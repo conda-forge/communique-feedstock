@@ -33,6 +33,8 @@ requirements:
     - cargo-auditable
     - cargo-bundle-licenses
     - cmake
+    - if: unix
+      then: make
 
 tests:
   - script:
