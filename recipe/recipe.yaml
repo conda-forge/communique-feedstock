@@ -38,10 +38,8 @@ requirements:
 
 tests:
   - script:
-      - if: build_platform == host_platform
-        then:
-          - communique --help
-          - communique --version
+      - communique --help
+      - communique --version
   - package_contents:
       bin:
         - communique
