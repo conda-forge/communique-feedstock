@@ -10,20 +10,25 @@ source:
   sha256: a589a2f5d1a9dce63fded1a0d98f2826389648bf6b0f5e8b3d0d28f2dd10326f
 
 build:
-  number: 0
+  number: 1
   script:
     env:
       AWS_LC_SYS_CMAKE_BUILDER: "1" # force CMake builder for `aws-lc-sys` native C code, required to make cross-compilation work
       CARGO_PROFILE_RELEASE_LTO: fat
       CARGO_PROFILE_RELEASE_STRIP: symbols
+    interpreter: nu
     content:
-      - if: unix
+      - let prefix = $env.LIBRARY_PREFIX? | default $env.PREFIX
+      - cargo auditable install --path=. --root=($prefix) --no-track --locked --bins
+      - cargo-bundle-licenses --format=yaml --output=THIRDPARTY.yml
+      # generate shell completions
+      - if: build_platform == host_platform
         then:
-          - cargo auditable install --path=. --root="$PREFIX" --no-track --locked --bins
-      - if: win
-        then:
-          - cargo auditable install --path=. --root="%LIBRARY_PREFIX%" --no-track --locked --bins
-      - cargo-bundle-licenses --format=yaml --output=./THIRDPARTY.yml
+          - mkdir ($prefix)/share/bash-completion/completions ($prefix)/share/fish/vendor_completions.d ($prefix)/share/zsh/site-functions
+          - let bin = ($prefix)/bin/communique
+          - ^$bin completion bash | save ($prefix)/share/bash-completion/completions/communique
+          - ^$bin completion fish | save ($prefix)/share/fish/vendor_completions.d/communique.fish
+          - ^$bin completion zsh  | save ($prefix)/share/zsh/site-functions/_communique
 
 requirements:
   build:
@@ -33,6 +38,7 @@ requirements:
     - cargo-auditable
     - cargo-bundle-licenses
     - cmake
+    - nushell
     - if: unix
       then: make
 
@@ -43,6 +49,17 @@ tests:
   - package_contents:
       bin:
         - communique
+      files:
+        - if: unix and build_platform == host_platform
+          then:
+            - share/bash-completion/completions/communique
+            - share/fish/vendor_completions.d/communique.fish
+            - share/zsh/site-functions/_communique
+        - if: win and build_platform == host_platform
+          then:
+            - Library/share/bash-completion/completions/communique
+            - Library/share/fish/vendor_completions.d/communique.fish
+            - Library/share/zsh/site-functions/_communique
       strict: true
 
 about:
@@ -53,6 +70,7 @@ about:
     update `CHANGELOG.md`, or publish directly to GitHub releases.
   license: MIT
   license_file:
+    - LICENSE
     - THIRDPARTY.yml
   homepage: https://communique.jdx.dev
   repository: https://github.com/jdx/communique
