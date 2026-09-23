@@ -1,5 +1,5 @@
 context:
-  version: "1.4.0"
+  version: "1.4.1"
 
 package:
   name: communique
@@ -7,10 +7,10 @@ package:
 
 source:
   url: https://github.com/jdx/communique/archive/refs/tags/v${{ version }}.tar.gz
-  sha256: 57f22091b93f130033a331699bc69a22f884e8194ff31523520f6b25793d0401
+  sha256: 26d7532cc0943dc7d19a7d9d93844d93ca5530968859be167d731d86f7588ccc
 
 build:
-  number: 1
+  number: 0
   script:
     env:
       AWS_LC_SYS_CMAKE_BUILDER: "1" # force CMake builder for `aws-lc-sys` native C code, required to make cross-compilation work
