@@ -1,5 +1,5 @@
 context:
-  version: "1.6.1"
+  version: "1.6.2"
 
 package:
   name: communique
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/jdx/communique/archive/refs/tags/v${{ version }}.tar.gz
-  sha256: 26086de3935b7a2ed35e23256159d6d4b156f26bcfc00633a870d539f2eddeee
+  sha256: b648661e88358e12fc589517c49ba68a8e5591c543a74e78dbed613f4a26bc8d
 
 build:
   number: 0
